@@ -1,0 +1,2 @@
+maxvcpus: 4
+model: "EPYC-Milan-v2"
