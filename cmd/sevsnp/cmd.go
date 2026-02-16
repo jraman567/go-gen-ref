@@ -18,7 +18,7 @@ import (
 const (
 	ClassIDByChip = "1.3.6.1.4.1.3704.3.1"
 	ClassIDByCsp  = "1.3.6.1.4.1.3704.3.2"
-	ProfileName   = "http://amd.com/2024/snp-corim-profile"
+	ProfileName   = "tag:amd.com,2025:snp-corim-profile"
 )
 
 var (
@@ -26,6 +26,9 @@ var (
 	ovmfFile     *string
 	reportFile   *string
 	corimFile    *string
+	kernelPath   *string
+	initrdPath   *string
+	appendParam  *string
 )
 
 var (
@@ -87,6 +90,18 @@ func NewSevsnpCmd(fs afero.Fs) *cobra.Command {
 		"corim", "f", "", "Reference values for VM/TEE in CoRIM format",
 	)
 
+	kernelPath = cmd.Flags().StringP(
+		"kernel", "k", "", "Kernel binary file",
+	)
+
+	initrdPath = cmd.Flags().StringP(
+		"initrd", "i", "", "Initrd binary file",
+	)
+
+	appendParam = cmd.Flags().StringP(
+		"append", "a", "", "Kernel command line arguments",
+	)
+
 	return cmd
 }
 
@@ -98,7 +113,7 @@ func composeRefVals(fs afero.Fs) error {
 	refValCorim.SetID(uuid.New().String())
 
 	for cpu := 1; cpu <= viper.GetInt("maxvcpus"); cpu++ {
-		refValComid, err := ReportToComid(reportProto, cpu)
+		refValComid, err := ReportToComid(reportProto, cpu, *kernelPath, *initrdPath, *appendParam)
 		if err != nil {
 			return err
 		}

@@ -23,10 +23,14 @@ go-gen-ref <scheme> <scheme-options>
 ```
 | Option | Description |
 | ------ | ------ |
-| -r | The SEV-SNP attestation report in binary format |
-| -c | vmconfig file |
-| -o | The OVMF binary used to deploy the TEE |
-| -f | specifies the name of output CoRIM file; if unspecified, the tool picks a random name |
+| -r, --report | SEV-SNP ATTESTATION_REPORT binary LE format |
+| -c, --vmconfig | YAML file containing info about VM/TEE |
+| -o, --ovmf | OVMF used with this VM/TEE |
+| -k, --kernel | Kernel binary file |
+| -i, --initrd | Initrd binary file |
+| -a, --append | Kernel command line arguments |
+| -f, --corim | Reference values for VM/TEE in CoRIM format (output file) |
+| -h, --help | help for sevsnp |
 
 In the above example, the output will be in /tmp/corim.cbor.
 

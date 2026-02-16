@@ -4,6 +4,9 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"os"
+	"strconv"
+
 	"github.com/google/go-sev-guest/abi"
 	"github.com/google/go-sev-guest/proto/sevsnp"
 	"github.com/google/uuid"
@@ -13,10 +16,9 @@ import (
 	"github.com/virtee/sev-snp-measure-go/guest"
 	"github.com/virtee/sev-snp-measure-go/ovmf"
 	"github.com/virtee/sev-snp-measure-go/vmmtypes"
-	"strconv"
 )
 
-func ReportToComid(reportProto *sevsnp.Report, cpu int) (*comid.Comid, error) {
+func ReportToComid(reportProto *sevsnp.Report, cpu int, kernelPath, initrdPath, appendParam string) (*comid.Comid, error) {
 	var (
 		err               error
 		launchMeasurement []byte
@@ -118,7 +120,7 @@ func ReportToComid(reportProto *sevsnp.Report, cpu int) (*comid.Comid, error) {
 	/* MKey 641: MEASUREMENT */
 	m641 := comid.MustNewUintMeasurement(uint(641))
 	if cpu > 0 {
-		launchMeasurement, err = calcLaunchMeasurement(cpu)
+		launchMeasurement, err = calcLaunchMeasurement(cpu, kernelPath, initrdPath, appendParam)
 	} else {
 		launchMeasurement = reportProto.GetMeasurement()
 	}
@@ -235,7 +237,7 @@ func ReportToComid(reportProto *sevsnp.Report, cpu int) (*comid.Comid, error) {
 	m3968.SetSVN(reportProto.GetLaunchTcb())
 	refVal.Measurements.Add(m3968)
 
-	refValComid.Triples.AddReferenceValue(refVal)
+	refValComid.Triples.AddReferenceValue(&refVal)
 
 	err = refValComid.Valid()
 	if err != nil {
@@ -252,7 +254,7 @@ func isAllZeros(buf []byte) bool {
 	return false
 }
 
-func calcLaunchMeasurement(vcpuCount int) ([]byte, error) {
+func calcLaunchMeasurement(vcpuCount int, kernelPath, initrdPath, appendParam string) ([]byte, error) {
 	ovmfObj, err := ovmf.New(*ovmfFile)
 	if err != nil {
 		return nil, err
@@ -263,7 +265,23 @@ func calcLaunchMeasurement(vcpuCount int) ([]byte, error) {
 		return nil, err
 	}
 
-	launchDigest, err := guest.LaunchDigestFromOVMF(ovmfObj, 0x1 /* guest features */, vcpuCount, ovmfHash, vmmtypes.QEMU, viper.GetString("model"))
+	var kernelBuf []byte
+	if kernelPath != "" {
+		kernelBuf, err = os.ReadFile(kernelPath)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var initrdBuf []byte
+	if initrdPath != "" {
+		initrdBuf, err = os.ReadFile(initrdPath)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	launchDigest, err := guest.LaunchDigestFromOVMF(ovmfObj, 0x1 /* guest features */, vcpuCount, ovmfHash, vmmtypes.QEMU, viper.GetString("model"), kernelBuf, initrdBuf, appendParam)
 	if err != nil {
 		return nil, err
 	}
