@@ -6,8 +6,8 @@ require (
 	github.com/spf13/afero v1.12.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/viper v1.19.0
-	github.com/veraison/corim v1.1.3-0.20250307044607-0bbdd6c78526
-	github.com/veraison/swid v1.1.1-0.20230911094910-8ffdd07a22ca
+	github.com/veraison/corim v1.1.3-0.20260611115812-7ca640710b0b
+	github.com/veraison/swid v1.1.1-0.20251003121634-fd1f7f1e1897
 	github.com/virtee/sev-snp-measure-go v0.0.0-20241128091219-920346c42ecb
 )
 
@@ -15,7 +15,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.3.0 // indirect
 	github.com/fsnotify/fsnotify v1.8.0 // indirect
-	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
+	github.com/fxamacker/cbor/v2 v2.8.0 // indirect
 	github.com/goccy/go-json v0.10.4 // indirect
 	github.com/google/logger v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -51,6 +51,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-go 1.22.0
-
-toolchain go1.23.4
+go 1.25.0
