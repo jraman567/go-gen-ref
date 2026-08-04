@@ -126,7 +126,7 @@ func ReportToComid(reportProto *sevsnp.Report, cpu int) (*comid.Comid, error) {
 	if err != nil {
 		return nil, fmt.Errorf("calc launch digest failed: %w", err)
 	}
-	m641.AddDigest(swid.Sha384, launchMeasurement)
+	m641.AddDigest(comid.Sha384, launchMeasurement)
 	refVal.Measurements.Add(m641)
 
 	/* MKey 642: HOST_DATA */
@@ -235,7 +235,7 @@ func ReportToComid(reportProto *sevsnp.Report, cpu int) (*comid.Comid, error) {
 	m3968.SetSVN(reportProto.GetLaunchTcb())
 	refVal.Measurements.Add(m3968)
 
-	refValComid.Triples.AddReferenceValue(refVal)
+	refValComid.Triples.AddReferenceValue(&refVal)
 
 	err = refValComid.Valid()
 	if err != nil {
